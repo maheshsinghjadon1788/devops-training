@@ -44,7 +44,14 @@ pipeline {
       steps {
         dir("${WORKSPACE}/ios") {
           echo '#### pod install start ####'
-         sh '${POD} install'
+        // sh '${POD} install'
+          sh '''
+  source ~/.rvm/scripts/rvm
+  rvm use 3.1.3
+  which ruby
+  which pod
+  pod --version
+'''
           echo '#### pod install done ####'
         }
       }
