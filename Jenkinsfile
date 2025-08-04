@@ -46,12 +46,8 @@ pipeline {
           echo '#### pod install start ####'
         // sh '${POD} install'
           sh '''
-  source ~/.rvm/scripts/rvm
-  rvm use 3.1.3
-  which ruby
-  which pod
-  pod --version
-'''
+            $HOME/.rvm/gems/ruby-3.1.3/wrappers/pod install
+          '''
           echo '#### pod install done ####'
         }
       }
