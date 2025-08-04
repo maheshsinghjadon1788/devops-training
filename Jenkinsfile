@@ -42,7 +42,7 @@ pipeline {
 
     stage('CocoaPods Install') {
       steps {
-        dir("${WORKSPACE}/ios") {
+        dir("${WORKSPACE}/expo-demo/ios") {
           echo '#### pod install start ####'
         // sh '${POD} install'
           sh '''
