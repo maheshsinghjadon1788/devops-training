@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   tools {
-        nodejs 'node18'  // <-- Name must match what you configured
+        nodejs 'NodeJS 18 with Yarn'  // <-- Name must match what you configured
     }
 
   environment {
