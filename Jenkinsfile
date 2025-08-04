@@ -1,34 +1,42 @@
 pipeline {
-    agent any
+  agent {
+    label 'macos' // Make sure Jenkins agent is macOS
+  }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                echo 'Cloning repository...'
-                checkout scm
-            }
-        }
+  environment {
+    LANG = 'en_US.UTF-8'
+    LC_ALL = 'en_US.UTF-8'
+    selectedScheme = 'expodemo'
+    archivePath = "${HOME}/Documents/devops/JenkinsiOSArchive/ExpoDemo.xcarchive"
+    exportAppPath = "${HOME}/Documents/devops/iOS"
+    exportOptionsPath = "${WORKSPACE}/ios/ExportOptions.plist"
+    BUILD_LOG_FILE = 'xcodebuild.log'
+  }
 
-        stage('Build') {
-            steps {
-                echo 'Building the project...'
-                // Example: compile or build step
-                // sh 'javac Main.java'
-            }
-        }
+  stages {
+    stage('Initialize') {
+      steps {
+        echo 'Build ExpoDemo App mobile'
+      }
+    }
 
-       stage('Test') {
-            steps {
-                echo 'Running tests...'
-                // Example: sh 'python3 -m unittest tests/'
-            }
+    stage('Install Dependencies') {
+      steps {
+        dir("${WORKSPACE}") {
+          echo '#### Yarn install start ####'
+          sh 'yarn install'
+          echo '#### Yarn install finish ####'
         }
+      }
+    }
 
-        stage('Deploy') {
-            steps {
-                echo 'Deploying the application...'
-                // Example: sh 'scp target/app.jar user@server:/deployments/'
-            }
+    stage('CocoaPods Install') {
+      steps {
+        dir("${WORKSPACE}/ios") {
+          echo '#### pod install start ####'
+          sh 'pod install'
+          echo '#### pod install done ####'
         }
+      }
     }
 }
