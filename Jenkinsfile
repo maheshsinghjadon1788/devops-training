@@ -1,6 +1,6 @@
 pipeline {
   agent {
-    label 'macos' // Make sure Jenkins agent is macOS
+    label 'macos' // Ensure Jenkins agent is macOS
   }
 
   environment {
@@ -39,4 +39,5 @@ pipeline {
         }
       }
     }
+  }
 }
