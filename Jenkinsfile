@@ -40,29 +40,6 @@ pipeline {
       }
     }
 
-  stages {
-    stage('Pod Install') {
-      steps {
-        sh '''
-          echo "Setting up Ruby and RVM..."
-          export HOME=$HOME
-          source ~/.rvm/scripts/rvm
-          rvm use 3.1.3 --default
-
-          echo "Ruby version:"
-          ruby -v
-
-          echo "Pod path:"
-          which pod
-
-          echo "Installing Pods..."
-          cd ios
-          pod install
-        '''
-      }
-    }
-  }
-
     stage('CocoaPods Install') {
       steps {
         dir("${WORKSPACE}/ios") {
