@@ -44,7 +44,10 @@ pipeline {
       steps {
         dir("${WORKSPACE}/ios") {
           echo '#### pod install start ####'
-          sh 'pod install'
+         sh '''
+  export PATH=$PATH:/opt/homebrew/bin
+  pod install
+'''
           echo '#### pod install done ####'
         }
       }
