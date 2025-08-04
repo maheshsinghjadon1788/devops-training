@@ -1,7 +1,5 @@
 pipeline {
-  agent {
-    label 'macos' // Ensure Jenkins agent is macOS
-  }
+  agent any
 
   environment {
     LANG = 'en_US.UTF-8'
