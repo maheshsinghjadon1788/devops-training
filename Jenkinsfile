@@ -18,9 +18,17 @@ pipeline {
       }
     }
 
-    stage('Install Dependencies') {
+    stage('Chnage To Root Directories') {
       steps {
         dir("${WORKSPACE}") {
+          echo '#### Path change to root directory'
+        }
+      }
+    }
+
+    stage('Install Dependencies') {
+      steps {
+        dir('expo-demo') {
           echo '#### Yarn install start ####'
           sh 'yarn install'
           echo '#### Yarn install finish ####'
