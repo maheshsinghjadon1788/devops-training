@@ -29,9 +29,9 @@ pipeline {
     stage('Install Dependencies') {
       steps {
         dir('expo-demo') {
-          echo '#### Yarn install start ####'
-          sh 'yarn install'
-          echo '#### Yarn install finish ####'
+          echo '#### Npm install start ####'
+          sh 'npm install'
+          echo '#### Npm install finish ####'
         }
       }
     }
