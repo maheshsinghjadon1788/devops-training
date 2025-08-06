@@ -11,7 +11,7 @@ pipeline {
             
             stage('Checkout') {
                 steps {
-                    git url: 'git@github.com-anuj:anuj2219/AWSDevOps.git', branch: 'main'
+                    git url: 'https://github.com/maheshsinghjadon1788/devops-training.git', branch: 'dev'
                 }
             }
             stage('Manual Approval for Prod') {
