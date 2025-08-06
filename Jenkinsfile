@@ -1,6 +1,14 @@
 pipeline {
   agent any
 
+  parameters {
+        choice(
+            name: 'ENVIRONMENT',
+            choices: ['dev', 'qa', 'prod'],
+            description: 'Select the environment'
+        )
+    }
+
   tools {
         nodejs 'NodeJS 18 with Yarn'  // <-- Name must match what you configured
     }
