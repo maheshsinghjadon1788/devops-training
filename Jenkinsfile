@@ -1,51 +1,67 @@
 pipeline {
     agent any
-    parameters {
-        choice(
-            name: 'ENVIRONMENT',
-            choices: ['dev', 'qa', 'prod'],
-            description: 'Select the environment'
-        )
+
+    environment {
+        APP_NAME = "my-app"
+        DOCKER_REGISTRY = "registry.example.com"
     }
-        stages {
-            
-            stage('Checkout') {
-                steps {
-                    git url: 'https://github.com/maheshsinghjadon1788/devops-training.git', branch: 'dev'
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+	stage('Build') {
+            steps {
+                script {
+                    sh 'mvn clean install -DskipTests'
                 }
             }
-            stage('Manual Approval for Prod') {
+        }
+
+        stage('Test') {
             when {
-                expression { return params.ENVIRONMENT == 'prod' }
+                not { branch 'main' }
             }
-            steps {
+	steps {
                 script {
-                    def userInput = input(
-                        id: 'ProdApproval', message: 'Approve Production Deployment?', parameters: [
-                            [$class: 'TextParameterDefinition', defaultValue: '', description: 'Enter reason for approval', name: 'ApprovalReason']
-                        ]
-                    )
-                    echo "Approval reason: ${userInput}"
+                    sh 'mvn test'
                 }
             }
         }
-        
-        stage('Run Environment Specific Steps') {
+
+        stage('Static Code Analysis') {
+            steps {
+                sh 'mvn sonar:sonar'
+            }
+        }
+	stage('Docker Build & Push') {
+            when {
+                branch 'main'
+            }
             steps {
                 script {
-                    if (params.ENVIRONMENT == 'dev') {
-                        echo 'Running DEV deployment steps...'
-                        // Add dev-specific commands here
-                    } else if (params.ENVIRONMENT == 'qa') {
-                        echo 'Running QA deployment steps...'
-                        // Add QA-specific commands here
-                    }
-                    else if (params.ENVIRONMENT == 'prod') {
-                        echo 'Running PROD deployment steps...'
-                        // Add prod-specific commands here
-                    }
+                    sh "docker build -t $DOCKER_REGISTRY/$APP_NAME:${env.BUILD_NUMBER} ."
+                    sh "docker push $DOCKER_REGISTRY/$APP_NAME:${env.BUILD_NUMBER}"
+                }
+            }
+	stage('Deploy to Staging') {
+            when {
+                branch 'release/*'
+            }
+            steps {
+                script {
+                    sh './scripts/deploy-staging.sh'
                 }
             }
         }
-    }       
+    }
+
+	post {
+        always {
+            echo "Cleaning workspace..."
+            cleanWs()
+        }
+    }
 }
