@@ -39,3 +39,7 @@ yarn-error.*
 app-example
 capstone-aws/terraform.tfstate.backup
 capstone-aws/tfplan
+capstone-aws/.terraform.lock.hcl
+capstone-aws/.terraform.tfstate.lock.info
+capstone-aws/.terraform/providers/registry.terraform.io/hashicorp/aws/6.21.0/darwin_arm64/LICENSE.txt
+capstone-aws/.terraform/providers/registry.terraform.io/hashicorp/aws/6.21.0/darwin_arm64/terraform-provider-aws_v6.21.0_x5

@@ -25,7 +25,7 @@ resource "aws_ecs_task_definition" "task" {
   container_definitions = jsonencode([
     {
       name  = "flask"
-      image = var.ecr_image_url
+      image = local.ecr_image_url
       portMappings = [
         {
           containerPort = 80

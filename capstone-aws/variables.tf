@@ -15,8 +15,14 @@ variable "app_name" {
   default = "flask-service"
 }
 
-variable "ecr_image_url" {
-  description = "Full ECR image URL for ECS Task Definition"
+variable "ecr_repo_name" {
+  description = "ECR repository name that holds the container image"
   type        = string
-  default     = "550101108440.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest"
+  default     = "flask-app"
+}
+
+variable "ecr_image_tag" {
+  description = "Image tag to deploy from the ECR repository"
+  type        = string
+  default     = "latest"
 }
