@@ -34,8 +34,9 @@ aws ecr create-repository \
 
 2) Authenticate Docker to ECR
 ```bash
+export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text --profile default)
 aws ecr get-login-password --region us-east-1 --profile default \
-| docker login --username AWS --password-stdin 550101108440.dkr.ecr.us-east-1.amazonaws.com
+| docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com
 ```
 
 ## Build and push the image
@@ -49,10 +50,10 @@ docker build -t flask-app:latest -f Dockerfile .
 export NEW_TAG="v$(date +%Y%m%d-%H%M%S)"
 
 # Tag for ECR
-docker tag flask-app:latest 550101108440.dkr.ecr.us-east-1.amazonaws.com/flask-app:$NEW_TAG
+docker tag flask-app:latest ${ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/flask-app:$NEW_TAG
 
 # Push to ECR
-docker push 550101108440.dkr.ecr.us-east-1.amazonaws.com/flask-app:$NEW_TAG
+docker push ${ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/flask-app:$NEW_TAG
 ```
 
 ## Configure Terraform variables
@@ -61,12 +62,14 @@ Edit `terraform.tfvars` and set (example):
 aws_region      = "us-east-1"
 aws_profile     = "default"
 environment     = "dev"
-# ECR repo and tag used to construct the image URL
+# ECR repo and tag used to construct the image URL (locals.tf builds the full URL)
 # If not changing the repo name, keep default from variables.tf
 # ecr_repo_name = "flask-app"
+# ecr_image_tag should be just the tag (e.g., "v20251124-110411"). Do NOT include the repo name or image URL.
+# You may omit this to use the default "latest" from variables.tf.
 ecr_image_tag  = "<your NEW_TAG from above>"
 ```
-Note: Do NOT put `ecr_image_url` in `terraform.tfvars`. It is derived in `locals.tf`.
+Note: Do NOT put `ecr_image_url` (or any full image URL) in `terraform.tfvars`. It is derived in `locals.tf` from the account, region, repo name, and `ecr_image_tag`.
 
 ## Deploy infrastructure
 From the project root:
@@ -92,8 +95,8 @@ Example: `http://flask-alb-1485033696.us-east-1.elb.amazonaws.com`
 cd python-docker
 export NEW_TAG="v$(date +%Y%m%d-%H%M%S)"
 docker build -t flask-app:latest -f Dockerfile .
-docker tag flask-app:latest 550101108440.dkr.ecr.us-east-1.amazonaws.com/flask-app:$NEW_TAG
-docker push 550101108440.dkr.ecr.us-east-1.amazonaws.com/flask-app:$NEW_TAG
+docker tag flask-app:latest ${ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/flask-app:$NEW_TAG
+docker push ${ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/flask-app:$NEW_TAG
 ```
 3) Update `terraform.tfvars` with the new `ecr_image_tag` and apply
 ```bash
@@ -105,7 +108,7 @@ Terraform will create a new task definition revision referencing the new image a
 ## Alternative: Using the `latest` tag
 If you prefer to keep `latest`, push to `latest` and then force a new ECS deployment (not as deterministic):
 ```bash
-docker push 550101108440.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest
+docker push ${ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest
 aws ecs update-service \
   --cluster flask-service-dev \
   --service flask-service-service \
